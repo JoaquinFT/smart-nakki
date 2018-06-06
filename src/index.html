@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Pete's Pet Shop</title>
+
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+
+  </head>
+  <body>
+
+    <div class='container-fluid' style="background:black; height:64px; width:100%; color:white;">
+      <div class='col-md-8'>Nakki</div>
+      <div class='col-md-4'>Automated Content Marketing powered by Ethereum</div>
+    </div>
+
+    <div class='container-fluid'>
+      <div id="main" style="display:none">
+        <div>
+          <p>In order to use Nakki, you need to install Metamask</p>
+          <img src="https://github.com/MetaMask/faq/raw/master/images/download-metamask.png" height="240px"/>
+        </div>
+      </div>
+    </div>
+
+    <div class='container-fluid'>
+      <div id="app-body" style="display:none">
+        <div class="row">
+          <div class="col-xs-12 col-sm-8 col-sm-push-2">
+            <h1 class="text-center">Welcome <span id="public_address"> </span></h1>
+            <hr/>
+            <br/>
+          </div>
+        </div>
+  <!--link accounts  -->
+        <div>
+          <div class="container">
+            <div class="row">Your Social Media Accounts</div>
+            <div class="row">
+              LinkedIn <span id="linkedin_status"> </span>
+            </div>
+            <div class="row">
+              Twitter <span id="twitter_status"> </span>
+            </div>
+            <div class="row">
+              Medium <span id="medium_status"> </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class='container-fluid'>
+      <div id="app-login" style="display:none">
+        <div class="container">
+          <div class="btn btn-lg btn-warning" onClick="SignUp()">Sign Up</div>
+          <p>Your account will be associated to your the <br> public address of your Metamask account</p>
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="js/bootstrap.min.js"></script>
+    <script src="js/web3.min.js"></script>
+    <script src="js/truffle-contract.js"></script>
+    <script src="js/app.js"></script>
+    <script src="js/oauth.js"></script>
+    <script>
+    window.addEventListener('load', function() {
+      if (typeof web3 !== 'undefined') {
+        web3 = new Web3(web3.currentProvider);
+        $.ajax({
+          dataType: "json",
+          type: "get",
+          url: "http://localhost:8000/social/eth_account",
+          data: {
+            'public_address': web3.eth.accounts[0],
+          },
+          success: function(data) {
+                        var address = data.public_address;
+                        var twitter = data.twitter_connected;
+                        var linkedin = data.linkedin_connected;
+                        var medium = data.medium_connected;
+                        var has_metamask = true
+                        var rsp = data.has_account;
+                        if(has_metamask) {
+                          if(rsp == 0) {
+                            var x = document.getElementById("app-login");
+                            x.style.display = "block";
+                          }
+                          else {
+                            var x = document.getElementById("app-body");
+                            x.style.display = "block";
+                            document.getElementById("public_address").innerHTML = address
+                            if(linkedin==0) {
+                              document.getElementById("linkedin_status").innerHTML = 'DISCONNECTED'
+                            }
+                            else {
+                              document.getElementById("linkedin_status").innerHTML = 'CONNECTED'
+                            }
+                            if(twitter==0) {
+                              document.getElementById("twitter_status").innerHTML = 'DISCONNECTED'
+                            }
+                            else {
+                              document.getElementById("twitter_status").innerHTML = 'CONNECTED'
+                            }
+                            if(medium==0) {
+                              document.getElementById("medium_status").innerHTML = 'DISCONNECTED'
+                            }
+                            else {
+                              document.getElementById("medium_status").innerHTML = 'CONNECTED'
+                            }
+
+
+                          }
+                        } else {
+                          var x = document.getElementById("main");
+                          x.style.display = "block";
+                        }
+
+                    }
+        });
+      } else {
+        console.log('problema')
+      }});
+
+    </script>
+    <script>
+    function SignUp() {
+              $.ajax({
+                dataType: "json",
+                url: "http://localhost:8000/social/eth_signup",
+                data: {
+                  'public_address': web3.eth.accounts[0],
+                },
+                success: function(data) {
+                              window.alert('DONE')
+                          }
+              });
+        }
+    </script>
+  </body>
+</html>
